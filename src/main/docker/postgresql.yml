@@ -6,8 +6,10 @@ services:
     # volumes:
     #   - ~/volumes/jhipster/microAuth/postgresql/:/var/lib/postgresql/data/
     environment:
-      - POSTGRES_USER=microAuth
-      - POSTGRES_HOST_AUTH_METHOD=trust
+      - POSTGRES_USER=postgres
+      #      - POSTGRES_HOST_AUTH_METHOD=trust
+      - POSTGRES_PASSWORD=passer
+      - POSTGRES_DB=ondmoney_auth
     healthcheck:
       test: ['CMD-SHELL', 'pg_isready -U $${POSTGRES_USER}']
       interval: 5s

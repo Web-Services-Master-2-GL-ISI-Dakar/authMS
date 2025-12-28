@@ -4,24 +4,15 @@ import com.groupeisi.m2gl.domain.User;
 import java.io.Serializable;
 import java.util.Objects;
 
-/**
- * A DTO representing a user, with only the public attributes.
- */
 public class UserDTO implements Serializable {
 
-    private static final long serialVersionUID = 1L;
-
     private String id;
-
     private String login;
 
-    public UserDTO() {
-        // Empty constructor needed for Jackson.
-    }
+    public UserDTO() {}
 
     public UserDTO(User user) {
         this.id = user.getId();
-        // Customize it here if you need, or not, firstName/lastName/etc
         this.login = user.getLogin();
     }
 
@@ -43,32 +34,19 @@ public class UserDTO implements Serializable {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (o == null || getClass() != o.getClass()) {
-            return false;
-        }
-
+        if (this == o) return true;
+        if (!(o instanceof UserDTO)) return false;
         UserDTO userDTO = (UserDTO) o;
-        if (userDTO.getId() == null || getId() == null) {
-            return false;
-        }
-
-        return Objects.equals(getId(), userDTO.getId()) && Objects.equals(getLogin(), userDTO.getLogin());
+        return Objects.equals(id, userDTO.id) && Objects.equals(login, userDTO.login);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(getId(), getLogin());
+        return Objects.hash(id, login);
     }
 
-    // prettier-ignore
     @Override
     public String toString() {
-        return "UserDTO{" +
-            "id='" + id + '\'' +
-            ", login='" + login + '\'' +
-            "}";
+        return "UserDTO{" + "id='" + id + '\'' + ", login='" + login + '\'' + '}';
     }
 }

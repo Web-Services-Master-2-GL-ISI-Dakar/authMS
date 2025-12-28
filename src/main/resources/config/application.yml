@@ -164,7 +164,7 @@ spring:
       hibernate.query.fail_on_pagination_over_collection_fetch: true
       hibernate.query.in_clause_parameter_padding: true
     hibernate:
-      ddl-auto: none
+      ddl-auto: update
       naming:
         physical-strategy: org.hibernate.boot.model.naming.CamelCaseToUnderscoresNamingStrategy
         implicit-strategy: org.springframework.boot.orm.jpa.hibernate.SpringImplicitNamingStrategy
@@ -253,6 +253,24 @@ jhipster:
       audience:
         - account
         - api://default
+keycloak:
+  realm: ondmoney-realm
+  auth-server-url: http://127.0.0.1:9080
+  resource: ondmoney-client
+  credentials:
+    secret: phJFNk0XS6r94up8zCEHCWsKBdu7eLts
+  admin:
+    username: admin
+    password: admin
+    services:
+      postgresql:
+        image: postgres:17.2
+        environment:
+          - POSTGRES_USER=postgres
+          - POSTGRES_PASSWORD=passer
+          - POSTGRES_DB=ondmoney_auth
+        ports:
+          - 5432:5432
 
 # jhipster-needle-add-application-yaml-document
 ---

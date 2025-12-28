@@ -1,8 +1,6 @@
 package com.groupeisi.m2gl.web.rest;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.groupeisi.m2gl.IntegrationTest;
