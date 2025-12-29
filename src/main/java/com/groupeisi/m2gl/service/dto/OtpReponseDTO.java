@@ -1,14 +1,11 @@
 package com.groupeisi.m2gl.service.dto;
 
-import java.io.Serializable;
-
-public class OtpReponseDTO implements Serializable {
+public class OtpReponseDTO {
 
     private String numeroTelephone;
     private String otp;
     private boolean nouveauUtilisateur;
 
-    // --- Getters & Setters ---
     public String getNumeroTelephone() {
         return numeroTelephone;
     }

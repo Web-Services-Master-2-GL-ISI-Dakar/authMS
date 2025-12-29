@@ -1,16 +1,27 @@
 package com.groupeisi.m2gl.service.dto;
 
-public class VerifyOtpDTO {
+import java.io.Serializable;
 
-    private String phone;
+public class VerifyOtpDTO implements Serializable {
+
+    private String numeroTelephone;
     private String otp;
+    private String pin; // PIN à définir après vérification OTP
 
-    public String getPhone() {
-        return phone;
+    public VerifyOtpDTO() {}
+
+    public VerifyOtpDTO(String numeroTelephone, String otp, String pin) {
+        this.numeroTelephone = numeroTelephone;
+        this.otp = otp;
+        this.pin = pin;
     }
 
-    public void setPhone(String phone) {
-        this.phone = phone;
+    public String getNumeroTelephone() {
+        return numeroTelephone;
+    }
+
+    public void setNumeroTelephone(String numeroTelephone) {
+        this.numeroTelephone = numeroTelephone;
     }
 
     public String getOtp() {
@@ -19,5 +30,13 @@ public class VerifyOtpDTO {
 
     public void setOtp(String otp) {
         this.otp = otp;
+    }
+
+    public String getPin() {
+        return pin;
+    }
+
+    public void setPin(String pin) {
+        this.pin = pin;
     }
 }

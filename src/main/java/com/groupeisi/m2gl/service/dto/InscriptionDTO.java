@@ -1,14 +1,11 @@
 package com.groupeisi.m2gl.service.dto;
 
-import java.io.Serializable;
-
-public class InscriptionDTO implements Serializable {
+public class InscriptionDTO {
 
     private String numeroTelephone;
     private String otp;
     private String pin;
 
-    // --- Getters & Setters ---
     public String getNumeroTelephone() {
         return numeroTelephone;
     }

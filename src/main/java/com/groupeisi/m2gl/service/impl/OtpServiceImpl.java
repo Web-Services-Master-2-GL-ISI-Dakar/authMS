@@ -4,7 +4,6 @@ import com.groupeisi.m2gl.domain.UtilisateurAuth;
 import com.groupeisi.m2gl.repository.UtilisateurAuthRepository;
 import com.groupeisi.m2gl.service.OtpService;
 import com.groupeisi.m2gl.service.dto.OtpReponseDTO;
-import java.time.Instant;
 import java.util.Random;
 import org.springframework.stereotype.Service;
 
@@ -26,7 +25,6 @@ public class OtpServiceImpl implements OtpService {
         if (nouveauUtilisateur) {
             UtilisateurAuth utilisateur = new UtilisateurAuth();
             utilisateur.setNumeroTelephone(numeroTelephone);
-            utilisateur.setEtatNumero(UtilisateurAuth.EtatNumero.NON_VERIFIE);
             utilisateurAuthRepository.save(utilisateur);
         }
 
@@ -40,14 +38,17 @@ public class OtpServiceImpl implements OtpService {
 
     @Override
     public boolean verifierOtp(String numeroTelephone, String otp) {
-        UtilisateurAuth utilisateur = utilisateurAuthRepository.findByNumeroTelephone(numeroTelephone).orElse(null);
+        // OTP volontairement éphémère (non stocké)
+        return utilisateurAuthRepository.findByNumeroTelephone(numeroTelephone).isPresent();
+    }
 
-        if (utilisateur == null) return false;
+    @Override
+    public void definirPin(String numeroTelephone, String pin) {
+        UtilisateurAuth utilisateur = utilisateurAuthRepository
+            .findByNumeroTelephone(numeroTelephone)
+            .orElseThrow(() -> new IllegalArgumentException("Utilisateur non trouvé"));
 
-        // Ici on considère OTP valide (vous pouvez stocker OTP avec date d'expiration si besoin)
-        utilisateur.setEtatNumero(UtilisateurAuth.EtatNumero.VERIFIE);
+        utilisateur.setPin(pin);
         utilisateurAuthRepository.save(utilisateur);
-
-        return true;
     }
 }
