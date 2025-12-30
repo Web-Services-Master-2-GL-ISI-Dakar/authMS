@@ -54,6 +54,7 @@ public class SecurityConfiguration {
                 authz
                    // .requestMatchers(mvc.pattern("/api/otp/generer")).permitAll()
                     .requestMatchers(mvc.pattern("/api/otp/**")).permitAll()
+                    .requestMatchers(mvc.pattern("/api/**")).permitAll()
                     .requestMatchers(mvc.pattern("/api/inscription/**")).permitAll() // Autorise l'accès sans token
                     .requestMatchers(mvc.pattern("/api/authenticate")).permitAll()
                     .requestMatchers(mvc.pattern("/api/auth-info")).permitAll()
