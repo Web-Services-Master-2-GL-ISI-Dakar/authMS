@@ -6,6 +6,9 @@ public class LoginResponseDTO {
     private String message;
     private String keycloakId;
 
+    // =========================
+    // GETTERS & SETTERS
+    // =========================
     public boolean isSucces() {
         return succes;
     }

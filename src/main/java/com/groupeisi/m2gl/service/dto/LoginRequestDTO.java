@@ -1,25 +1,24 @@
 package com.groupeisi.m2gl.service.dto;
 
+import jakarta.validation.constraints.NotBlank;
+
 public class LoginRequestDTO {
 
-    private String phone;
+    @NotBlank(message = "Le numéro de téléphone est obligatoire")
+    private String numeroTelephone;
+
+    @NotBlank(message = "Le PIN est obligatoire")
     private String pin;
 
-    // Constructeurs
-    public LoginRequestDTO() {}
-
-    public LoginRequestDTO(String phone, String pin) {
-        this.phone = phone;
-        this.pin = pin;
+    // =========================
+    // GETTERS & SETTERS
+    // =========================
+    public String getNumeroTelephone() {
+        return numeroTelephone;
     }
 
-    // Getters / Setters
-    public String getPhone() {
-        return phone;
-    }
-
-    public void setPhone(String phone) {
-        this.phone = phone;
+    public void setNumeroTelephone(String numeroTelephone) {
+        this.numeroTelephone = numeroTelephone;
     }
 
     public String getPin() {
