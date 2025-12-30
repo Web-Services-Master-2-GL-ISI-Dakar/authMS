@@ -94,7 +94,13 @@
         <artifactId>postgresql</artifactId>
         <scope>runtime</scope>
       </dependency>
-        <dependency>
+      <dependency>
+        <groupId>org.keycloak</groupId>
+        <artifactId>keycloak-admin-client</artifactId>
+        <version>24.0.4</version>
+      </dependency>
+
+      <dependency>
             <groupId>tech.jhipster</groupId>
             <artifactId>jhipster-framework</artifactId>
             <version>${jhipster-framework.version}</version>

@@ -1,20 +1,10 @@
 package com.groupeisi.m2gl.service.dto;
 
-import java.io.Serializable;
-
-public class VerifyOtpDTO implements Serializable {
+public class VerifyOtpDTO {
 
     private String numeroTelephone;
     private String otp;
-    private String pin; // PIN à définir après vérification OTP
-
-    public VerifyOtpDTO() {}
-
-    public VerifyOtpDTO(String numeroTelephone, String otp, String pin) {
-        this.numeroTelephone = numeroTelephone;
-        this.otp = otp;
-        this.pin = pin;
-    }
+    private String pin; // optionnel, si défini après OTP
 
     public String getNumeroTelephone() {
         return numeroTelephone;

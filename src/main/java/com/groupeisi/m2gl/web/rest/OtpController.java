@@ -3,6 +3,7 @@ package com.groupeisi.m2gl.web.rest;
 import com.groupeisi.m2gl.service.OtpService;
 import com.groupeisi.m2gl.service.dto.OtpReponseDTO;
 import com.groupeisi.m2gl.service.dto.VerifyOtpDTO;
+import java.util.Map;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -16,18 +17,15 @@ public class OtpController {
         this.otpService = otpService;
     }
 
-    /**
-     * Générer un OTP pour un numéro de téléphone.
-     */
+    // Générer OTP
     @PostMapping("/generer")
-    public ResponseEntity<OtpReponseDTO> genererOtp(@RequestParam String numeroTelephone) {
+    public ResponseEntity<OtpReponseDTO> genererOtp(@RequestBody Map<String, String> request) {
+        String numeroTelephone = request.get("numeroTelephone");
         OtpReponseDTO reponse = otpService.genererOtp(numeroTelephone);
         return ResponseEntity.ok(reponse);
     }
 
-    /**
-     * Vérifier l'OTP et définir le PIN si nécessaire.
-     */
+    // Vérifier OTP et définir PIN
     @PostMapping("/verifier")
     public ResponseEntity<String> verifierOtp(@RequestBody VerifyOtpDTO dto) {
         boolean otpValide = otpService.verifierOtp(dto.getNumeroTelephone(), dto.getOtp());
@@ -36,7 +34,6 @@ public class OtpController {
             return ResponseEntity.badRequest().body("OTP invalide ou expiré");
         }
 
-        // Définir le PIN si fourni
         if (dto.getPin() != null && !dto.getPin().isEmpty()) {
             otpService.definirPin(dto.getNumeroTelephone(), dto.getPin());
         }

@@ -1,7 +1,10 @@
 package com.groupeisi.m2gl.web.rest;
 
 import com.groupeisi.m2gl.service.InscriptionService;
-import com.groupeisi.m2gl.service.dto.InscriptionDTO;
+import com.groupeisi.m2gl.service.dto.CheckNumberDTO;
+import com.groupeisi.m2gl.service.dto.CompletionKycDTO;
+import com.groupeisi.m2gl.service.dto.OtpReponseDTO;
+import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -15,8 +18,17 @@ public class InscriptionController {
         this.inscriptionService = inscriptionService;
     }
 
-    @PostMapping("/valider")
-    public ResponseEntity<String> valider(@RequestBody InscriptionDTO dto) {
-        return ResponseEntity.ok(inscriptionService.inscrire(dto));
+    // Vérifier si le numéro existe et générer OTP si nouveau
+    @PostMapping("/check-number")
+    public ResponseEntity<OtpReponseDTO> checkNumero(@Valid @RequestBody CheckNumberDTO dto) {
+        OtpReponseDTO reponse = inscriptionService.verifierOuGenererOtp(dto.getNumeroTelephone());
+        return ResponseEntity.ok(reponse);
+    }
+
+    // Compléter inscription avec OTP, PIN et KYC
+    @PostMapping("/completion")
+    public ResponseEntity<String> completionKyc(@Valid @RequestBody CompletionKycDTO dto) {
+        String result = inscriptionService.inscrireComplet(dto);
+        return ResponseEntity.ok(result);
     }
 }
