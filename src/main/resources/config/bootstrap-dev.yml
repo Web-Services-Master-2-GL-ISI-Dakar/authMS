@@ -1,0 +1,12 @@
+# ===================================================================
+# Spring Cloud Config bootstrap configuration for the "dev" profile
+# Désactive Docker Compose intégré car nous utilisons docker-compose.dev.yml
+# ===================================================================
+
+spring:
+  docker:
+    compose:
+      enabled: false
+  cloud:
+    config:
+      enabled: false

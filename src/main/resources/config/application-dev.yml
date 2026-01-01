@@ -21,11 +21,11 @@ logging:
     com.groupeisi.m2gl: DEBUG
 
 eureka:
+  client:
+    # Désactivé pour le développement local sans JHipster Registry
+    enabled: false
   instance:
     prefer-ip-address: true
-  client:
-    service-url:
-      defaultZone: http://admin:${jhipster.registry.password}@localhost:8761/eureka/
 
 management:
   zipkin: # Use the "zipkin" Maven profile to have the Spring Cloud Zipkin dependencies
@@ -44,32 +44,27 @@ spring:
       enabled: false # we use Webpack dev server + BrowserSync for livereload
   docker:
     compose:
-      enabled: true
-      profiles:
-        active: dev
+      # Désactivé car nous utilisons backend/docker-compose.dev.yml centralisé
+      enabled: false
   jackson:
     serialization:
       indent-output: true
   cloud:
     config:
-      uri: http://admin:${jhipster.registry.password}@localhost:8761/config
-      # name of the config server's property source (file.yml) that we want to use
-      name: microAuth
-      profile: dev
-      label: main # toggle to switch to a different version of the configuration as stored in git
-      # it can be set to any label, branch or commit of the configuration source Git repository
+      # Désactivé pour le développement local sans JHipster Registry
+      enabled: false
   datasource:
     type: com.zaxxer.hikari.HikariDataSource
-    url: jdbc:h2:mem:microAuth;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE
-    username: microAuth
-    password:
+    # Connexion à PostgreSQL via docker-compose.dev.yml
+    url: jdbc:postgresql://localhost:5432/ondmoney_auth
+    username: postgres
+    password: passer
     hikari:
       poolName: Hikari
       auto-commit: false
   h2:
     console:
-      # JHipster uses a custom h2-console initializer
-      enabled: true
+      enabled: false
   liquibase:
     # Remove 'faker' if you do not want the sample data to be loaded automatically
     contexts: dev, faker
@@ -92,15 +87,15 @@ server:
 jhipster:
   registry:
     password: admin
-  # CORS is disabled by default on microservices, as you should access them through a gateway.
-  # If you want to enable it, please uncomment the configuration below.
-  # cors:
-  #   allowed-origins: "http://localhost:9000,https://localhost:9000"
-  #   allowed-methods: "*"
-  #   allowed-headers: "*"
-  #   exposed-headers: "Authorization,Link,X-Total-Count"
-  #   allow-credentials: true
-  #   max-age: 1800
+  # CORS configuration for mobile app and development
+  cors:
+    allowed-origins: "http://localhost:8081,http://localhost:19006,http://localhost:19000,http://localhost:3000,exp://localhost:8081"
+    allowed-origin-patterns: "*"
+    allowed-methods: "*"
+    allowed-headers: "*"
+    exposed-headers: "Authorization,Link,X-Total-Count,X-microAuthApp-alert,X-microAuthApp-error,X-microAuthApp-params"
+    allow-credentials: true
+    max-age: 1800
   logging:
     use-json-format: false # By default, logs are not in Json format
     logstash: # Forward logs to logstash over a socket, used by LoggingConfiguration
