@@ -254,11 +254,12 @@ jhipster:
         - account
         - api://default
 keycloak:
-  realm: ondmoney-realm
+  # Doit correspondre au realm importé dans Keycloak (jhipster-realm.json)
+  realm: jhipster
   auth-server-url: http://127.0.0.1:9080
-  resource: ondmoney-client
+  resource: web_app
   credentials:
-    secret: phJFNk0XS6r94up8zCEHCWsKBdu7eLts
+    secret: web_app
   admin:
     username: admin
     password: admin

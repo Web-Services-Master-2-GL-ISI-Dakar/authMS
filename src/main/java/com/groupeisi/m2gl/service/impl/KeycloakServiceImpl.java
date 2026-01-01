@@ -98,7 +98,17 @@ public class KeycloakServiceImpl implements KeycloakService {
 
     @Override
     public boolean userExistsByNumeroTelephone(String numeroTelephone) {
-        List<UserRepresentation> users = keycloak.realm(realm).users().search(numeroTelephone, true);
-        return !users.isEmpty();
+        try {
+            List<UserRepresentation> users = keycloak.realm(realm).users().search(numeroTelephone, true);
+            return !users.isEmpty();
+        } catch (jakarta.ws.rs.NotFoundException e) {
+            // Le realm n'existe pas ou Keycloak n'est pas accessible - considérer comme nouvel utilisateur
+            log.warn("Keycloak realm '{}' non trouvé ou inaccessible. Considérant l'utilisateur comme nouveau.", realm);
+            return false;
+        } catch (Exception e) {
+            log.error("Erreur lors de la vérification de l'utilisateur dans Keycloak: {}", e.getMessage());
+            // En cas d'erreur, on considère que l'utilisateur n'existe pas pour permettre l'inscription
+            return false;
+        }
     }
 }
