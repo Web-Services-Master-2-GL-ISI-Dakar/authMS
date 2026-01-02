@@ -10,6 +10,7 @@ public final class Constants {
 
     public static final String SYSTEM = "system";
     public static final String DEFAULT_LANGUAGE = "fr";
+    public static final String NOTIF_WS_ENDPOINT = "http://localhost:8071/ws";
 
     private Constants() {}
 }
