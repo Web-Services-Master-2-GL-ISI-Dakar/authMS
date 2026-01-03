@@ -22,10 +22,12 @@ logging:
 
 eureka:
   client:
-    # Désactivé pour le développement local sans JHipster Registry
-    enabled: false
+    enabled: true
+    service-url:
+      defaultZone: http://admin:admin@localhost:8761/eureka/
   instance:
     prefer-ip-address: true
+    appname: microauth
 
 management:
   zipkin: # Use the "zipkin" Maven profile to have the Spring Cloud Zipkin dependencies
