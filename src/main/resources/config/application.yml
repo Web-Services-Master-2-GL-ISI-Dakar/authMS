@@ -124,6 +124,17 @@ management:
 spring:
   application:
     name: microAuth
+  # Kafka Configuration for Outbox pattern
+  kafka:
+    bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVERS:localhost:9092}
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.apache.kafka.common.serialization.StringSerializer
+      acks: all
+      retries: 3
+      properties:
+        enable.idempotence: true
+        max.in.flight.requests.per.connection: 5
   docker:
     compose:
       enabled: true

@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<databaseChangeLog
+    xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+
+    <!--
+        Outbox table for reliable Kafka event publishing.
+        Events are stored here within the same transaction as business operations,
+        then asynchronously published to Kafka by the OutboxPoller.
+    -->
+    <changeSet id="20260103000000-1" author="ondmoney">
+        <createTable tableName="outbox_events">
+            <column name="id" type="uuid">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="aggregate_type" type="varchar(100)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="aggregate_id" type="varchar(100)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="event_type" type="varchar(100)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="payload" type="text">
+                <constraints nullable="false"/>
+            </column>
+            <column name="correlation_id" type="varchar(100)"/>
+            <column name="created_at" type="timestamp">
+                <constraints nullable="false"/>
+            </column>
+            <column name="sent_at" type="timestamp"/>
+            <column name="retry_count" type="int" defaultValue="0">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <!-- Index for finding unsent events efficiently -->
+        <createIndex indexName="idx_outbox_unsent" tableName="outbox_events">
+            <column name="sent_at"/>
+            <column name="created_at"/>
+        </createIndex>
+
+        <!-- Index for aggregate lookups -->
+        <createIndex indexName="idx_outbox_aggregate" tableName="outbox_events">
+            <column name="aggregate_type"/>
+            <column name="aggregate_id"/>
+        </createIndex>
+
+        <!-- Constraint to ensure retry count is non-negative -->
+        <sql>
+            ALTER TABLE outbox_events ADD CONSTRAINT chk_retry_count CHECK (retry_count >= 0);
+        </sql>
+    </changeSet>
+
+</databaseChangeLog>

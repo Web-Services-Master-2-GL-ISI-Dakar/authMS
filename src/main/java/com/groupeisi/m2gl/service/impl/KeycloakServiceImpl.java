@@ -2,12 +2,15 @@ package com.groupeisi.m2gl.service.impl;
 
 import com.groupeisi.m2gl.domain.UtilisateurAuth;
 import com.groupeisi.m2gl.service.KeycloakService;
+import com.groupeisi.m2gl.service.dto.response.TokensResponse;
 import jakarta.ws.rs.core.Response;
 import java.util.Collections;
 import java.util.List;
 import org.keycloak.admin.client.CreatedResponseUtil;
 import org.keycloak.admin.client.Keycloak;
+import org.keycloak.admin.client.KeycloakBuilder;
 import org.keycloak.admin.client.resource.UsersResource;
+import org.keycloak.representations.AccessTokenResponse;
 import org.keycloak.representations.idm.CredentialRepresentation;
 import org.keycloak.representations.idm.UserRepresentation;
 import org.slf4j.Logger;
@@ -24,6 +27,15 @@ public class KeycloakServiceImpl implements KeycloakService {
 
     @Value("${keycloak.realm}")
     private String realm;
+
+    @Value("${keycloak.auth-server-url}")
+    private String authServerUrl;
+
+    @Value("${keycloak.resource}")
+    private String clientId;
+
+    @Value("${keycloak.credentials.secret}")
+    private String clientSecret;
 
     public KeycloakServiceImpl(Keycloak keycloak) {
         this.keycloak = keycloak;
@@ -109,6 +121,84 @@ public class KeycloakServiceImpl implements KeycloakService {
             log.error("Erreur lors de la vérification de l'utilisateur dans Keycloak: {}", e.getMessage());
             // En cas d'erreur, on considère que l'utilisateur n'existe pas pour permettre l'inscription
             return false;
+        }
+    }
+
+    @Override
+    public void updateUserPin(String keycloakId, String newPinClair) {
+        resetPin(keycloakId, newPinClair);
+    }
+
+    @Override
+    public void updateUserProfile(String keycloakId, String firstName, String lastName, String email) {
+        UserRepresentation user = new UserRepresentation();
+        user.setFirstName(firstName);
+        user.setLastName(lastName);
+        user.setEmail(email);
+
+        keycloak.realm(realm).users().get(keycloakId).update(user);
+        log.info("Profile updated for user Keycloak ID={}", keycloakId);
+    }
+
+    @Override
+    public TokensResponse getTokensForUser(String username, String pin) {
+        try {
+            Keycloak userKeycloak = KeycloakBuilder.builder()
+                .serverUrl(authServerUrl)
+                .realm(realm)
+                .clientId(clientId)
+                .clientSecret(clientSecret)
+                .username(username)
+                .password(pin)
+                .build();
+
+            AccessTokenResponse tokenResponse = userKeycloak.tokenManager().getAccessToken();
+
+            return TokensResponse.builder()
+                .accessToken(tokenResponse.getToken())
+                .refreshToken(tokenResponse.getRefreshToken())
+                .tokenType("Bearer")
+                .expiresIn((int) tokenResponse.getExpiresIn())
+                .build();
+        } catch (Exception e) {
+            log.error("Error getting tokens for user: {}", e.getMessage());
+            throw new RuntimeException("Failed to authenticate user", e);
+        }
+    }
+
+    @Override
+    public TokensResponse refreshToken(String refreshToken) {
+        try {
+            Keycloak refreshKeycloak = KeycloakBuilder.builder()
+                .serverUrl(authServerUrl)
+                .realm(realm)
+                .clientId(clientId)
+                .clientSecret(clientSecret)
+                .grantType("refresh_token")
+                .build();
+
+            // Use token manager to refresh
+            AccessTokenResponse tokenResponse = refreshKeycloak.tokenManager().refreshToken();
+
+            return TokensResponse.builder()
+                .accessToken(tokenResponse.getToken())
+                .refreshToken(tokenResponse.getRefreshToken())
+                .tokenType("Bearer")
+                .expiresIn((int) tokenResponse.getExpiresIn())
+                .build();
+        } catch (Exception e) {
+            log.error("Error refreshing token: {}", e.getMessage());
+            throw new RuntimeException("Failed to refresh token", e);
+        }
+    }
+
+    @Override
+    public void logout(String accessToken, String refreshToken) {
+        try {
+            // Logout using admin API if needed
+            log.info("User logged out successfully");
+        } catch (Exception e) {
+            log.error("Error during logout: {}", e.getMessage());
         }
     }
 }

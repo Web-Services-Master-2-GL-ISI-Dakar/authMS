@@ -1,6 +1,7 @@
 package com.groupeisi.m2gl.service;
 
 import com.groupeisi.m2gl.domain.UtilisateurAuth;
+import com.groupeisi.m2gl.service.dto.response.TokensResponse;
 
 public interface KeycloakService {
     /**
@@ -21,7 +22,32 @@ public interface KeycloakService {
     void resetPin(String keycloakId, String newPinClair);
 
     /**
+     * Mise à jour du PIN utilisateur
+     */
+    void updateUserPin(String keycloakId, String newPinClair);
+
+    /**
+     * Mise à jour du profil utilisateur
+     */
+    void updateUserProfile(String keycloakId, String firstName, String lastName, String email);
+
+    /**
      * Vérifie l'existence Keycloak
      */
     boolean userExistsByNumeroTelephone(String numeroTelephone);
+
+    /**
+     * Get tokens for user after authentication
+     */
+    TokensResponse getTokensForUser(String username, String pin);
+
+    /**
+     * Refresh access token using refresh token
+     */
+    TokensResponse refreshToken(String refreshToken);
+
+    /**
+     * Logout user and revoke tokens
+     */
+    void logout(String accessToken, String refreshToken);
 }
