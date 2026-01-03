@@ -119,6 +119,15 @@
             <artifactId>spring-boot-starter-actuator</artifactId>
         </dependency>
         <dependency>
+            <groupId>org.springframework.kafka</groupId>
+            <artifactId>spring-kafka</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.kafka</groupId>
+            <artifactId>spring-kafka-test</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-aop</artifactId>
         </dependency>
@@ -365,11 +374,10 @@
                 <configuration>
                   <schemaLanguage>WSDL</schemaLanguage>
                   <generatePackage>com.groupeisi.m2gl.notif.wsdl</generatePackage>
-                  <schemas>
-                    <schema>
-                      <url>http://localhost:8071/ws/notifications.wsdl</url>
-                    </schema>
-                  </schemas>
+                  <schemaDirectory>${project.basedir}/src/main/resources/wsdl</schemaDirectory>
+                  <schemaIncludes>
+                    <include>notifications.wsdl</include>
+                  </schemaIncludes>
                 </configuration>
               </execution>
             </executions>

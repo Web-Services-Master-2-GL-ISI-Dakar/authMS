@@ -1,0 +1,295 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<wsdl:definitions xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/"
+                  xmlns:sch="http://ondmoney.sn/notification"
+                  xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/"
+                  xmlns:tns="http://ondmoney.sn/notification"
+                  targetNamespace="http://ondmoney.sn/notification">
+  <wsdl:types>
+    <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+               xmlns:tns="http://ondmoney.sn/notification"
+               targetNamespace="http://ondmoney.sn/notification"
+               elementFormDefault="qualified">
+
+      <!-- TYPES COMPLEXES DE BASE -->
+      <xs:complexType name="serviceStatus">
+        <xs:sequence>
+          <xs:element name="success" type="xs:boolean"/>
+          <xs:element name="code" type="xs:string"/>
+          <xs:element name="message" type="xs:string"/>
+        </xs:sequence>
+      </xs:complexType>
+
+      <xs:complexType name="notificationPayload">
+        <xs:sequence>
+          <xs:element name="verificationCode" type="xs:string" minOccurs="0"/>
+          <xs:element name="verificationCodeExpiryInMinutes" type="xs:int" minOccurs="0"/>
+          <xs:element name="transactionId" type="xs:string" minOccurs="0"/>
+          <xs:element name="amount" type="xs:string" minOccurs="0"/>
+          <xs:element name="currency" type="xs:string" minOccurs="0"/>
+          <xs:element name="balance" type="xs:string" minOccurs="0"/>
+          <xs:element name="transactionDate" type="xs:dateTime" minOccurs="0"/>
+          <xs:element name="sender" type="xs:string" minOccurs="0"/>
+          <xs:element name="senderName" type="xs:string" minOccurs="0"/>
+          <xs:element name="beneficiary" type="xs:string" minOccurs="0"/>
+          <xs:element name="beneficiaryName" type="xs:string" minOccurs="0"/>
+          <xs:element name="loginDateTime" type="xs:dateTime" minOccurs="0"/>
+          <xs:element name="device" type="xs:string" minOccurs="0"/>
+          <xs:element name="location" type="xs:string" minOccurs="0"/>
+          <xs:element name="accountNumber" type="xs:string" minOccurs="0"/>
+          <xs:element name="merchantCode" type="xs:string" minOccurs="0"/>
+          <xs:element name="merchantName" type="xs:string" minOccurs="0"/>
+          <xs:element name="payer" type="xs:string" minOccurs="0"/>
+          <xs:element name="originalTransactionId" type="xs:string" minOccurs="0"/>
+          <xs:element name="bankName" type="xs:string" minOccurs="0"/>
+          <xs:element name="operator" type="xs:string" minOccurs="0"/>
+          <xs:element name="company" type="xs:string" minOccurs="0"/>
+          <xs:element name="billRef" type="xs:string" minOccurs="0"/>
+          <xs:element name="transactionStatus" type="xs:string" minOccurs="0"/>
+          <xs:element name="failureReason" type="xs:string" minOccurs="0"/>
+        </xs:sequence>
+      </xs:complexType>
+
+      <xs:complexType name="notificationLogInfo">
+        <xs:sequence>
+          <xs:element name="id" type="xs:string"/>
+          <xs:element name="eventRef" type="xs:string"/>
+          <xs:element name="eventTime" type="xs:dateTime"/>
+          <xs:element name="userId" type="xs:string"/>
+          <xs:element name="recipient" type="xs:string"/>
+          <xs:element name="notificationType" type="xs:string"/>
+          <xs:element name="notificationStatus" type="xs:string"/>
+          <xs:element name="notificationChannel" type="xs:string"/>
+          <xs:element name="sentAt" type="xs:dateTime"/>
+          <xs:element name="externalEventRef" type="xs:string" minOccurs="0"/>
+          <xs:element name="errorMessage" type="xs:string" minOccurs="0"/>
+          <xs:element name="retryCount" type="xs:int"/>
+        </xs:sequence>
+      </xs:complexType>
+
+      <xs:complexType name="otpInfo">
+        <xs:sequence>
+          <xs:element name="phoneNumber" type="xs:string"/>
+          <xs:element name="verificationCode" type="xs:string"/>
+          <xs:element name="expiryInMinutes" type="xs:int"/>
+        </xs:sequence>
+      </xs:complexType>
+
+      <xs:complexType name="transferInfo">
+        <xs:sequence>
+          <xs:element name="transactionId" type="xs:string"/>
+          <xs:element name="sender" type="xs:string"/>
+          <xs:element name="senderName" type="xs:string"/>
+          <xs:element name="beneficiary" type="xs:string"/>
+          <xs:element name="beneficiaryName" type="xs:string"/>
+          <xs:element name="amount" type="xs:string"/>
+          <xs:element name="currency" type="xs:string"/>
+          <xs:element name="balance" type="xs:string"/>
+          <xs:element name="transactionDate" type="xs:dateTime"/>
+          <xs:element name="transactionStatus" type="xs:string"/>
+        </xs:sequence>
+      </xs:complexType>
+
+      <xs:complexType name="securityAlertInfo">
+        <xs:sequence>
+          <xs:element name="userId" type="xs:string"/>
+          <xs:element name="phoneNumber" type="xs:string"/>
+          <xs:element name="email" type="xs:string" minOccurs="0"/>
+          <xs:element name="loginDateTime" type="xs:dateTime"/>
+          <xs:element name="device" type="xs:string"/>
+          <xs:element name="location" type="xs:string"/>
+          <xs:element name="ipAddress" type="xs:string" minOccurs="0"/>
+        </xs:sequence>
+      </xs:complexType>
+
+      <!-- ENVOYER UNE NOTIFICATION -->
+      <xs:element name="sendNotificationRequest">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="eventRef" type="xs:string"/>
+            <xs:element name="notificationType" type="xs:string"/>
+            <xs:element name="notificationChannel" type="xs:string"/>
+            <xs:element name="language" type="xs:string" default="FR"/>
+            <xs:element name="priority" type="xs:string" default="MEDIUM"/>
+            <xs:element name="recipient" type="xs:string"/>
+            <xs:element name="userId" type="xs:string" minOccurs="0"/>
+            <xs:element name="payload" type="tns:notificationPayload"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+
+      <xs:element name="NotificationResponse">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="status" type="tns:serviceStatus"/>
+            <xs:element name="notificationLogId" type="xs:string" minOccurs="0"/>
+            <xs:element name="externalEventRef" type="xs:string" minOccurs="0"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+
+      <!-- ENVOYER OTP PAR SMS -->
+      <xs:element name="sendOtpRequest">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="eventRef" type="xs:string"/>
+            <xs:element name="otp" type="tns:otpInfo"/>
+            <xs:element name="language" type="xs:string" default="FR"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+
+      <xs:element name="OtpResponse">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="status" type="tns:serviceStatus"/>
+            <xs:element name="otp" type="tns:otpInfo"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+
+      <!-- ALERTE DE SÉCURITÉ -->
+      <xs:element name="sendSecurityAlertRequest">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="eventRef" type="xs:string"/>
+            <xs:element name="alert" type="tns:securityAlertInfo"/>
+            <xs:element name="sendSms" type="xs:boolean" default="true"/>
+            <xs:element name="sendEmail" type="xs:boolean" default="true"/>
+            <xs:element name="sendPush" type="xs:boolean" default="true"/>
+            <xs:element name="language" type="xs:string" default="FR"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+
+      <xs:element name="SecurityAlertResponse">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="status" type="tns:serviceStatus"/>
+            <xs:element name="alert" type="tns:securityAlertInfo"/>
+            <xs:element name="smsNotificationId" type="xs:string" minOccurs="0"/>
+            <xs:element name="emailNotificationId" type="xs:string" minOccurs="0"/>
+            <xs:element name="pushNotificationId" type="xs:string" minOccurs="0"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+
+      <!-- HEALTH CHECK -->
+      <xs:element name="healthCheckRequest">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="timestamp" type="xs:dateTime"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+
+      <xs:element name="HealthCheckResponse">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="status" type="tns:serviceStatus"/>
+            <xs:element name="serviceName" type="xs:string"/>
+            <xs:element name="version" type="xs:string"/>
+            <xs:element name="uptime" type="xs:string"/>
+            <xs:element name="smsProviderStatus" type="xs:string"/>
+            <xs:element name="emailProviderStatus" type="xs:string"/>
+            <xs:element name="pushProviderStatus" type="xs:string"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+
+    </xs:schema>
+  </wsdl:types>
+
+  <!-- Messages -->
+  <wsdl:message name="sendNotificationRequest">
+    <wsdl:part element="tns:sendNotificationRequest" name="sendNotificationRequest"/>
+  </wsdl:message>
+  <wsdl:message name="NotificationResponse">
+    <wsdl:part element="tns:NotificationResponse" name="NotificationResponse"/>
+  </wsdl:message>
+  <wsdl:message name="sendOtpRequest">
+    <wsdl:part element="tns:sendOtpRequest" name="sendOtpRequest"/>
+  </wsdl:message>
+  <wsdl:message name="OtpResponse">
+    <wsdl:part element="tns:OtpResponse" name="OtpResponse"/>
+  </wsdl:message>
+  <wsdl:message name="sendSecurityAlertRequest">
+    <wsdl:part element="tns:sendSecurityAlertRequest" name="sendSecurityAlertRequest"/>
+  </wsdl:message>
+  <wsdl:message name="SecurityAlertResponse">
+    <wsdl:part element="tns:SecurityAlertResponse" name="SecurityAlertResponse"/>
+  </wsdl:message>
+  <wsdl:message name="healthCheckRequest">
+    <wsdl:part element="tns:healthCheckRequest" name="healthCheckRequest"/>
+  </wsdl:message>
+  <wsdl:message name="HealthCheckResponse">
+    <wsdl:part element="tns:HealthCheckResponse" name="HealthCheckResponse"/>
+  </wsdl:message>
+
+  <!-- Port Type -->
+  <wsdl:portType name="NotificationPort">
+    <wsdl:operation name="sendNotification">
+      <wsdl:input message="tns:sendNotificationRequest" name="sendNotificationRequest"/>
+      <wsdl:output message="tns:NotificationResponse" name="NotificationResponse"/>
+    </wsdl:operation>
+    <wsdl:operation name="sendOtp">
+      <wsdl:input message="tns:sendOtpRequest" name="sendOtpRequest"/>
+      <wsdl:output message="tns:OtpResponse" name="OtpResponse"/>
+    </wsdl:operation>
+    <wsdl:operation name="sendSecurityAlert">
+      <wsdl:input message="tns:sendSecurityAlertRequest" name="sendSecurityAlertRequest"/>
+      <wsdl:output message="tns:SecurityAlertResponse" name="SecurityAlertResponse"/>
+    </wsdl:operation>
+    <wsdl:operation name="healthCheck">
+      <wsdl:input message="tns:healthCheckRequest" name="healthCheckRequest"/>
+      <wsdl:output message="tns:HealthCheckResponse" name="HealthCheckResponse"/>
+    </wsdl:operation>
+  </wsdl:portType>
+
+  <!-- Binding -->
+  <wsdl:binding name="NotificationPortSoap11" type="tns:NotificationPort">
+    <soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
+    <wsdl:operation name="sendNotification">
+      <soap:operation soapAction=""/>
+      <wsdl:input name="sendNotificationRequest">
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output name="NotificationResponse">
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="sendOtp">
+      <soap:operation soapAction=""/>
+      <wsdl:input name="sendOtpRequest">
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output name="OtpResponse">
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="sendSecurityAlert">
+      <soap:operation soapAction=""/>
+      <wsdl:input name="sendSecurityAlertRequest">
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output name="SecurityAlertResponse">
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="healthCheck">
+      <soap:operation soapAction=""/>
+      <wsdl:input name="healthCheckRequest">
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output name="HealthCheckResponse">
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+  </wsdl:binding>
+
+  <!-- Service -->
+  <wsdl:service name="NotificationPortService">
+    <wsdl:port binding="tns:NotificationPortSoap11" name="NotificationPortSoap11">
+      <soap:address location="http://localhost:8071/ws"/>
+    </wsdl:port>
+  </wsdl:service>
+</wsdl:definitions>
