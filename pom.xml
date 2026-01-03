@@ -315,6 +315,24 @@
             <artifactId>testcontainers</artifactId>
             <scope>test</scope>
         </dependency>
+      <dependency>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-web-services</artifactId>
+      </dependency>
+      <dependency>
+        <groupId>jakarta.xml.bind</groupId>
+        <artifactId>jakarta.xml.bind-api</artifactId>
+      </dependency>
+      <dependency>
+        <groupId>org.glassfish.jaxb</groupId>
+        <artifactId>jaxb-runtime</artifactId>
+        <version>2.3.2</version>
+      </dependency>
+      <dependency>
+        <groupId>org.glassfish.jaxb</groupId>
+        <artifactId>jaxb-runtime</artifactId>
+        <version>4.0.3</version>
+      </dependency>
     </dependencies>
 
     <build>
@@ -335,6 +353,27 @@
             </resource>
         </resources>
         <plugins>
+          <plugin>
+            <groupId>org.jvnet.jaxb2.maven2</groupId>
+            <artifactId>maven-jaxb2-plugin</artifactId>
+            <version>0.14.0</version>
+            <executions>
+              <execution>
+                <goals>
+                  <goal>generate</goal>
+                </goals>
+                <configuration>
+                  <schemaLanguage>WSDL</schemaLanguage>
+                  <generatePackage>com.groupeisi.m2gl.notif.wsdl</generatePackage>
+                  <schemas>
+                    <schema>
+                      <url>http://localhost:8071/ws/notifications.wsdl</url>
+                    </schema>
+                  </schemas>
+                </configuration>
+              </execution>
+            </executions>
+          </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-checkstyle-plugin</artifactId>
