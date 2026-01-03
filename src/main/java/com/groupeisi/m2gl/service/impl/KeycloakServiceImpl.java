@@ -143,15 +143,23 @@ public class KeycloakServiceImpl implements KeycloakService {
     @Override
     public TokensResponse getTokensForUser(String username, String pin) {
         try {
-            Keycloak userKeycloak = KeycloakBuilder.builder()
+            log.debug("Attempting to get tokens for user: {} with client: {}", username, clientId);
+            
+            // Build Keycloak client - use secret only if client is confidential
+            KeycloakBuilder builder = KeycloakBuilder.builder()
                 .serverUrl(authServerUrl)
                 .realm(realm)
                 .clientId(clientId)
-                .clientSecret(clientSecret)
+                .grantType("password")
                 .username(username)
-                .password(pin)
-                .build();
-
+                .password(pin);
+            
+            // Add client secret if configured (for confidential clients)
+            if (clientSecret != null && !clientSecret.isBlank()) {
+                builder.clientSecret(clientSecret);
+            }
+            
+            Keycloak userKeycloak = builder.build();
             AccessTokenResponse tokenResponse = userKeycloak.tokenManager().getAccessToken();
 
             return TokensResponse.builder()
@@ -161,7 +169,8 @@ public class KeycloakServiceImpl implements KeycloakService {
                 .expiresIn((int) tokenResponse.getExpiresIn())
                 .build();
         } catch (Exception e) {
-            log.error("Error getting tokens for user: {}", e.getMessage());
+            log.error("Error getting tokens for user '{}': {} - Cause: {}", 
+                username, e.getMessage(), e.getCause() != null ? e.getCause().getMessage() : "none");
             throw new RuntimeException("Failed to authenticate user", e);
         }
     }
