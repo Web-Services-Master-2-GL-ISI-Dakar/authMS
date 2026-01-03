@@ -1,13 +1,16 @@
 package com.groupeisi.m2gl.web.rest.v1;
 
+import com.groupeisi.m2gl.event.payload.OtpRequestedEvent.OtpPurpose;
 import com.groupeisi.m2gl.service.AuthService;
 import com.groupeisi.m2gl.service.dto.request.CheckPhoneRequest;
 import com.groupeisi.m2gl.service.dto.request.CompleteSignUpRequest;
 import com.groupeisi.m2gl.service.dto.request.LoginRequest;
 import com.groupeisi.m2gl.service.dto.request.RefreshTokenRequest;
+import com.groupeisi.m2gl.service.dto.request.ResendOtpRequest;
 import com.groupeisi.m2gl.service.dto.response.ApiResponse;
 import com.groupeisi.m2gl.service.dto.response.AuthResponse;
 import com.groupeisi.m2gl.service.dto.response.CheckPhoneResponse;
+import com.groupeisi.m2gl.service.dto.response.ResendOtpResponse;
 import com.groupeisi.m2gl.service.dto.response.TokensResponse;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
@@ -48,6 +51,33 @@ public class AuthController {
         LOG.info("Check phone request for: {}", maskPhone(request.getPhoneNumber()));
 
         CheckPhoneResponse response = authService.checkPhone(request.getPhoneNumber(), correlationId);
+        
+        return ResponseEntity.ok(ApiResponse.success(response, correlationId));
+    }
+
+    /**
+     * POST /api/v1/auth/sign-up/resend-otp
+     * Resend OTP code to user's phone number.
+     */
+    @PostMapping("/sign-up/resend-otp")
+    public ResponseEntity<ApiResponse<ResendOtpResponse>> resendOtp(
+            @Valid @RequestBody ResendOtpRequest request,
+            HttpServletRequest httpRequest) {
+        
+        String correlationId = getOrCreateCorrelationId(httpRequest);
+        LOG.info("Resend OTP request for: {}", maskPhone(request.getPhoneNumber()));
+
+        // Parse purpose, default to REGISTRATION
+        OtpPurpose purpose = OtpPurpose.REGISTRATION;
+        if (request.getPurpose() != null) {
+            try {
+                purpose = OtpPurpose.valueOf(request.getPurpose().toUpperCase());
+            } catch (IllegalArgumentException e) {
+                LOG.warn("Invalid OTP purpose: {}, defaulting to REGISTRATION", request.getPurpose());
+            }
+        }
+
+        ResendOtpResponse response = authService.resendOtp(request.getPhoneNumber(), purpose, correlationId);
         
         return ResponseEntity.ok(ApiResponse.success(response, correlationId));
     }

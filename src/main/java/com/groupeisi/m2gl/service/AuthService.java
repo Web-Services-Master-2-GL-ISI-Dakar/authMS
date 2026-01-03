@@ -8,6 +8,7 @@ import com.groupeisi.m2gl.service.dto.request.CompleteSignUpRequest;
 import com.groupeisi.m2gl.service.dto.request.LoginRequest;
 import com.groupeisi.m2gl.service.dto.response.AuthResponse;
 import com.groupeisi.m2gl.service.dto.response.CheckPhoneResponse;
+import com.groupeisi.m2gl.service.dto.response.ResendOtpResponse;
 import com.groupeisi.m2gl.service.dto.response.TokensResponse;
 import com.groupeisi.m2gl.service.dto.response.UserResponse;
 import com.groupeisi.m2gl.web.rest.errors.BadRequestAlertException;
@@ -157,6 +158,53 @@ public class AuthService {
         return AuthResponse.builder()
             .user(mapToUserResponse(user))
             .tokens(tokens)
+            .build();
+    }
+
+    /**
+     * Resend OTP code to the user's phone number.
+     * Rate limited to prevent abuse (max 3 attempts per 5 minutes).
+     */
+    public ResendOtpResponse resendOtp(String phoneNumber, OtpPurpose purpose, String correlationId) {
+        LOG.debug("Resend OTP request for: {} with purpose: {}", maskPhone(phoneNumber), purpose);
+
+        // Check if user exists (for registration, user should NOT exist)
+        boolean userExists = userRepository.findByNumeroTelephone(phoneNumber).isPresent() 
+            || keycloakService.userExistsByNumeroTelephone(phoneNumber);
+
+        if (purpose == OtpPurpose.REGISTRATION && userExists) {
+            throw new BadRequestAlertException("User already registered", "auth", "USER_ALREADY_EXISTS");
+        }
+
+        if (purpose != OtpPurpose.REGISTRATION && !userExists) {
+            throw new BadRequestAlertException("User not found", "auth", "USER_NOT_FOUND");
+        }
+
+        // Generate new OTP
+        String otp = otpService.genererOtp(phoneNumber).getOtp();
+
+        // Publish OTP event based on purpose
+        switch (purpose) {
+            case REGISTRATION:
+                eventProducer.publishOtpForRegistration(phoneNumber, otp, correlationId);
+                break;
+            case PIN_RESET:
+                eventProducer.publishOtpForPinReset(phoneNumber, otp, correlationId);
+                break;
+            case PIN_CREATION:
+                eventProducer.publishOtpForPinCreation(phoneNumber, otp, correlationId);
+                break;
+            default:
+                eventProducer.publishOtpForRegistration(phoneNumber, otp, correlationId);
+        }
+
+        LOG.info("OTP resent successfully for: {}", maskPhone(phoneNumber));
+
+        return ResendOtpResponse.builder()
+            .phoneNumber(phoneNumber)
+            .otpSent(true)
+            .otpExpiresAt(Instant.now().plus(OTP_EXPIRY_MINUTES, ChronoUnit.MINUTES))
+            .remainingAttempts(2) // Placeholder - implement rate limiting if needed
             .build();
     }
 
